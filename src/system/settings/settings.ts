@@ -179,8 +179,8 @@ export const Setting: Array<Setting> = [
   },
   {
     key: SettingKeys.Skip_Egg_Hatching_Animations,
-    label: "Skip Egg Hatching Animation",
-    options: OFF_ON,
+    label: "Skip Egg Animations",
+    options: ["Off", "Common", "Great-", "Ultra-", "All"],
     default: 0,
     type: SettingType.GENERAL
   },
@@ -636,7 +636,7 @@ export function setSetting(scene: BattleScene, setting: string, value: integer):
     scene.showBgmBar = Setting[index].options[value].value === "On";
     break;
   case SettingKeys.Skip_Egg_Hatching_Animations:
-    scene.skipEggHatchingAnimation = Setting[index].options[value] === "On";
+    scene.skipEggHatchingAnimation = value;
     break;
   case SettingKeys.Candy_Upgrade_Notification:
     if (scene.candyUpgradeNotification === value) {
