@@ -77,6 +77,7 @@ export const SettingKeys = {
   EXP_Gains_Speed: "EXP_GAINS_SPEED",
   EXP_Party_Display: "EXP_PARTY_DISPLAY",
   Skip_Seen_Dialogues: "SKIP_SEEN_DIALOGUES",
+  Skip_Egg_Hatching_Animations: "SKIP_EGG_HATCHING_ANIMATIONS",
   Battle_Style: "BATTLE_STYLE",
   Enable_Retries: "ENABLE_RETRIES",
   Tutorials: "TUTORIALS",
@@ -173,6 +174,13 @@ export const Setting: Array<Setting> = [
         label: i18next.t("settings:skip")
       }
     ],
+    default: 0,
+    type: SettingType.GENERAL
+  },
+  {
+    key: SettingKeys.Skip_Egg_Hatching_Animations,
+    label: "Skip Egg Hatching Animation",
+    options: OFF_ON,
     default: 0,
     type: SettingType.GENERAL
   },
@@ -626,6 +634,9 @@ export function setSetting(scene: BattleScene, setting: string, value: integer):
     break;
   case SettingKeys.Show_BGM_Bar:
     scene.showBgmBar = Setting[index].options[value].value === "On";
+    break;
+  case SettingKeys.Skip_Egg_Hatching_Animations:
+    scene.skipEggHatchingAnimation = Setting[index].options[value] === "On";
     break;
   case SettingKeys.Candy_Upgrade_Notification:
     if (scene.candyUpgradeNotification === value) {
