@@ -16,7 +16,8 @@ export const defaultConfig = {
 			}
 			warn(warning);
 		},
-	}
+	},
+	appType: "mpa",
 };
 
 
