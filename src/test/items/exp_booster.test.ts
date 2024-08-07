@@ -28,13 +28,14 @@ describe("EXP Modifier Items", () => {
     vi.spyOn(Overrides, "BATTLE_TYPE_OVERRIDE", "get").mockReturnValue("single");
   });
 
-  it("EXP booster items stack additively", async() => {
-    vi.spyOn(Overrides, "STARTING_HELD_ITEMS_OVERRIDE", "get").mockReturnValue([{name: "LUCKY_EGG"}, {name: "GOLDEN_EGG"}]);
+  it("EXP booster items stack multiplicatively", async() => {
+    game.override.startingHeldItems([{name: "LUCKY_EGG", count: 3}, {name: "GOLDEN_EGG"}]);
     await game.startBattle();
 
-    const partyMember = game.scene.getPlayerPokemon();
-    const modifierBonusExp = new Utils.NumberHolder(1);
-    partyMember.scene.applyModifiers(PokemonExpBoosterModifier, true, partyMember, modifierBonusExp);
-    expect(modifierBonusExp.value).toBe(2.4);
+    const partyMember = game.scene.getPlayerPokemon()!;
+    partyMember.exp = 100;
+    const expHolder = new Utils.NumberHolder(partyMember.exp);
+    partyMember.scene.applyModifiers(PokemonExpBoosterModifier, true, partyMember, expHolder);
+    expect(expHolder.value).toBe(440);
   }, 20000);
 });
