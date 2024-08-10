@@ -16,7 +16,7 @@ export const EGG_SEED = 1073741824;
 const DEFAULT_SHINY_RATE = 128;
 const GACHA_SHINY_UP_SHINY_RATE = 64;
 const SAME_SPECIES_EGG_SHINY_RATE = 32;
-const SAME_SPECIES_EGG_HA_RATE = 16;
+const SAME_SPECIES_EGG_HA_RATE = 4;
 const MANAPHY_EGG_MANAPHY_RATE = 8;
 
 // 1/x for legendary eggs, 1/x*2 for epic eggs, 1/x*4 for rare eggs, and 1/x*8 for common eggs
@@ -212,7 +212,7 @@ export class Egg {
     let abilityIndex = undefined;
     if (pokemonSpecies.abilityHidden && (this._overrideHiddenAbility
       || (this._sourceType === EggSourceType.SAME_SPECIES_EGG && !Utils.randSeedInt(SAME_SPECIES_EGG_HA_RATE)))) {
-      abilityIndex = 2;
+      abilityIndex = pokemonSpecies.ability2 ? 2 : 1;
     }
 
     // This function has way to many optional parameters
@@ -309,7 +309,7 @@ export class Egg {
     case EggTier.COMMON:
       return 10;
     case EggTier.GREAT:
-      return 25;
+      return 35;
     case EggTier.ULTRA:
       return 50;
     }
@@ -398,11 +398,11 @@ export class Egg {
     let totalWeight = 0;
     const speciesWeights = [];
     for (const speciesId of speciesPool) {
-      let weight = Math.floor((((maxStarterValue - speciesStarters[speciesId]) / ((maxStarterValue - minStarterValue) + 1)) * 1.5 + 1) * 100);
-      const species = getPokemonSpecies(speciesId);
+      const weight = Math.floor((((maxStarterValue - speciesStarters[speciesId]) / ((maxStarterValue - minStarterValue) + 1)) * 1.5 + 1) * 100);
+      /*const species = getPokemonSpecies(speciesId);
       if (species.isRegional()) {
         weight = Math.floor(weight / (species.isRareRegional() ? 8 : 2));
-      }
+      }*/
       speciesWeights.push(totalWeight + weight);
       totalWeight += weight;
     }
