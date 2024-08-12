@@ -1219,11 +1219,11 @@ export type ModifierOverride = GeneratorModifierOverride | BaseModifierOverride;
 export type ModifierTypeKeys = keyof typeof modifierTypes;
 
 export const modifierTypes = {
-  POKEBALL: () => new AddPokeballModifierType("pb", PokeballType.POKEBALL, 5),
+  POKEBALL: () => new AddPokeballModifierType("pb", PokeballType.POKEBALL, 10),
   GREAT_BALL: () => new AddPokeballModifierType("gb", PokeballType.GREAT_BALL, 5),
   ULTRA_BALL: () => new AddPokeballModifierType("ub", PokeballType.ULTRA_BALL, 5),
   ROGUE_BALL: () => new AddPokeballModifierType("rb", PokeballType.ROGUE_BALL, 5),
-  MASTER_BALL: () => new AddPokeballModifierType("mb", PokeballType.MASTER_BALL, 3),
+  MASTER_BALL: () => new AddPokeballModifierType("mb", PokeballType.MASTER_BALL, 5),
 
   RARE_CANDY: () => new PokemonLevelIncrementModifierType("modifierType:ModifierType.RARE_CANDY", "rare_candy"),
   RARER_CANDY: () => new AllPokemonLevelIncrementModifierType("modifierType:ModifierType.RARER_CANDY", "rarer_candy"),
@@ -1406,9 +1406,9 @@ export const modifierTypes = {
 
   MINI_BLACK_HOLE: () => new TurnHeldItemTransferModifierType("modifierType:ModifierType.MINI_BLACK_HOLE", "mini_black_hole"),
 
-  VOUCHER: () => new AddVoucherModifierType(VoucherType.REGULAR, 5),
-  VOUCHER_PLUS: () => new AddVoucherModifierType(VoucherType.PLUS, 3),
-  VOUCHER_PREMIUM: () => new AddVoucherModifierType(VoucherType.PREMIUM, 2),
+  VOUCHER: () => new AddVoucherModifierType(VoucherType.REGULAR, 10),
+  VOUCHER_PLUS: () => new AddVoucherModifierType(VoucherType.PLUS, 6),
+  VOUCHER_PREMIUM: () => new AddVoucherModifierType(VoucherType.PREMIUM, 3),
 
   GOLDEN_POKEBALL: () => new ModifierType("modifierType:ModifierType.GOLDEN_POKEBALL", "pb_gold", (type, _args) => new Modifiers.ExtraModifierModifier(type), null, "pb_bounce_1"),
 
