@@ -180,7 +180,27 @@ export const Setting: Array<Setting> = [
   {
     key: SettingKeys.Skip_Egg_Hatching_Animations,
     label: "Skip Egg Animations",
-    options: ["Off", "Common", "Great-", "Ultra-", "All"],
+    options: [
+      {
+        value: "0",
+        label: "Off"
+      },
+      {
+        value: "1",
+        label: "Common"
+      },
+      {
+        value: "2",
+        label: "Great-"
+      },
+      {
+        value: "3",
+        label: "Ultra-"
+      },
+      {
+        value: "4",
+        label: "All"
+      }],
     default: 0,
     type: SettingType.GENERAL
   },
