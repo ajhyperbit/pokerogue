@@ -16,7 +16,7 @@ import { trainerConfigs } from "../data/trainer-config";
 import { SettingKeys, resetSettings, setSetting } from "./settings/settings";
 import { achvs } from "./achv";
 import EggData from "./egg-data";
-import { Egg, GachaType } from "../data/egg";
+import { Egg } from "../data/egg";
 import { VoucherType, vouchers } from "./voucher";
 import { AES, enc } from "crypto-js";
 import { Mode } from "../ui/ui";
@@ -318,9 +318,9 @@ export class GameData {
       [VoucherType.PREMIUM]: 0,
       [VoucherType.GOLDEN]: 0
     };
-    const EGG_SEED = 1073741824;
-    this.eggs = [
-      new Egg(1, 1, 5, new Date().getTime()),
+    /*      const EGG_SEED = 1073741824;*/
+    this.eggs = [];
+    /*      new Egg(1, 1, 5, new Date().getTime()),
       new Egg(1, 1, 5, new Date().getTime()),
       new Egg(1, 1, 5, new Date().getTime()),
       new Egg(1 + EGG_SEED, 1, 15, new Date().getTime()),
