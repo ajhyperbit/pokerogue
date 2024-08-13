@@ -84,9 +84,9 @@ export default class PokemonInfoContainer extends Phaser.GameObjects.Container {
     const currentLanguage = i18next.resolvedLanguage;
     const langSettingKey = Object.keys(languageSettings).find(lang => currentLanguage.includes(lang));
     const textSettings = languageSettings[langSettingKey];
-    this.infoBg = addWindow(this.scene, 0, 0, this.infoWindowWidth, 132);
-    this.infoBg.setOrigin(0.5, 0.5);
-    this.infoBg.setName("window-info-bg");
+    const infoBg = addWindow(this.scene, 0, 0, this.infoWindowWidth, 132);
+    infoBg.setOrigin(0.5, 0.5);
+    infoBg.setName("window-info-bg");
 
     this.pokemonMovesContainer = this.scene.add.container(6, 14);
     this.pokemonMovesContainer.setName("pkmn-moves");
@@ -134,7 +134,7 @@ export default class PokemonInfoContainer extends Phaser.GameObjects.Container {
 
     this.statsContainer = new StatsContainer(this.scene, -48, -64, true);
 
-    this.add(this.infoBg);
+    this.add(infoBg);
     this.add(this.statsContainer);
 
     // The position should be set per language
@@ -278,7 +278,8 @@ export default class PokemonInfoContainer extends Phaser.GameObjects.Container {
       const opponentPokemonAbilityIndex = (opponentPokemonOneNormalAbility && pokemon.abilityIndex === 1) ? 2 : pokemon.abilityIndex;
       const opponentPokemonAbilityAttr = Math.pow(2, opponentPokemonAbilityIndex);
 
-      const rootFormHasHiddenAbility = starterEntry.abilityAttr & opponentPokemonAbilityAttr;
+      const rootFormHasHiddenAbility = pokemon.scene.gameData.starterData[pokemon.species.getRootSpeciesId()].abilityAttr & opponentPokemonAbilityAttr;
+
       if (!rootFormHasHiddenAbility) {
         this.pokemonAbilityLabelText.setColor(getTextColor(TextStyle.SUMMARY_BLUE, false, this.scene.uiTheme));
         this.pokemonAbilityLabelText.setShadowColor(getTextColor(TextStyle.SUMMARY_BLUE, true, this.scene.uiTheme));
@@ -289,7 +290,7 @@ export default class PokemonInfoContainer extends Phaser.GameObjects.Container {
 
       this.pokemonNatureText.setText(getNatureName(pokemon.getNature(), true, false, false, this.scene.uiTheme));
 
-      const dexNatures = dexEntry.natureAttr;
+      const dexNatures = pokemon.scene.gameData.dexData[pokemon.species.speciesId].natureAttr;
       const newNature = Math.pow(2, pokemon.nature + 1);
 
       if (!(dexNatures & newNature)) {
