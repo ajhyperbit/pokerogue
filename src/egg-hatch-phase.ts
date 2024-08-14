@@ -91,16 +91,16 @@ export class EggHatchPhase extends Phase {
     this.pokemon = pokemon;
 
     // If Pokemon is new, show animation no matter setting.
-    let newPokemon = false;
+    /*let newPokemon = false;
     const dexEntry = this.scene.gameData.dexData[this.pokemon.species.speciesId];
     const caughtAttr = dexEntry.caughtAttr;
     if (!caughtAttr && speciesStarters.hasOwnProperty(this.pokemon.species.speciesId)) {
       newPokemon = true;
-    }
+    }*/
 
     // TODO: See how this data loads/what UI looks like when you're hatching the max possible eggs at once
     // Skip animations for eggs whose tiers are lower than the desired setting.
-    if (!newPokemon && this.scene.skipEggHatchingAnimation !== 0) {
+    if (/*!newPokemon &&*/ this.scene.skipEggHatchingAnimation !== 0) {
       if (this.egg.tier < this.scene.skipEggHatchingAnimation) {
         this.updateEggData();
         return;
