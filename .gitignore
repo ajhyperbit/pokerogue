@@ -41,3 +41,6 @@ coverage
 
 /dependency-graph.svg
 /.vs
+
+#AJ ignore
+nohup.out

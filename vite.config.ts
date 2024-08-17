@@ -22,6 +22,7 @@ export const defaultConfig: UserConfig  = {
 			},
 		},
 	},
+	appType: "mpa",
 };
 
 

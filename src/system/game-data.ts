@@ -323,7 +323,26 @@ export class GameData {
       [VoucherType.PREMIUM]: 0,
       [VoucherType.GOLDEN]: 0
     };
+    /*      const EGG_SEED = 1073741824;*/
     this.eggs = [];
+    /*      new Egg(1, 1, 5, new Date().getTime()),
+      new Egg(1, 1, 5, new Date().getTime()),
+      new Egg(1, 1, 5, new Date().getTime()),
+      new Egg(1 + EGG_SEED, 1, 15, new Date().getTime()),
+      new Egg(1 + EGG_SEED * 2, 1, 50, new Date().getTime()),
+      new Egg(1 + EGG_SEED * 2, 1, 50, new Date().getTime()),
+      new Egg(1 + EGG_SEED * 3, GachaType.LEGENDARY, 100, new Date().getTime())
+    ];
+
+    /*
+    this.scene.gameData.eggs = [
+      new Egg(1, 1, 5, new Date().getTime()),
+      new Egg(1 + EGG_SEED, 1, 15, new Date().getTime()),
+      new Egg(1 + EGG_SEED * 2, 1, 50, new Date().getTime()),
+      new Egg(1 + EGG_SEED * 3, GachaType.LEGENDARY, 100, new Date().getTime())
+    ];
+    this.scene.gameData.eggs.push(egg); // ...
+*/
     this.eggPity = [0, 0, 0, 0];
     this.unlockPity = [0, 0, 0, 0];
     this.initDexData();
@@ -1486,7 +1505,7 @@ export class GameData {
         }
 
         if (!hasPrevolution && (!pokemon.scene.gameMode.isDaily || hasNewAttr || fromEgg)) {
-          this.addStarterCandy(species, (1 * (pokemon.isShiny() ? 5 * (1 << (pokemon.variant ?? 0)) : 1)) * (fromEgg || pokemon.isBoss() ? 2 : 1));
+          this.addStarterCandy(species, (8 * (pokemon.isShiny() ? 5 * Math.pow(2, pokemon.variant || 0) : 1)) * (fromEgg || pokemon.isBoss() ? 2 : 1));
         }
       }
 
@@ -1545,7 +1564,7 @@ export class GameData {
     this.starterData[species.speciesId].candyCount += count;
   }
 
-  setEggMoveUnlocked(species: PokemonSpecies, eggMoveIndex: integer): Promise<boolean> {
+  setEggMoveUnlocked(species: PokemonSpecies, eggMoveIndex: integer, skipAnimation?: boolean): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       const speciesId = species.speciesId;
       if (!speciesEggMoves.hasOwnProperty(speciesId) || !speciesEggMoves[speciesId][eggMoveIndex]) {
@@ -1565,6 +1584,11 @@ export class GameData {
       }
 
       this.starterData[speciesId].eggMoves |= value;
+
+      if (skipAnimation) {
+        resolve(false); // Double check this resolve.
+        return;
+      }
 
       this.scene.playSound("level_up_fanfare");
 
