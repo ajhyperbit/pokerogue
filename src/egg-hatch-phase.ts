@@ -76,9 +76,9 @@ export class EggHatchPhase extends Phase {
 
     const eggIndex = this.scene.gameData.eggs.findIndex(e => e.id === this.egg.id);
 
-    if (eggIndex === -1) {
+    /*if (eggIndex === -1) {
       return this.end();
-    }
+    }*/
 
     this.scene.gameData.eggs.splice(eggIndex, 1);
 
