@@ -32,7 +32,7 @@ import { type ModifierOverride } from "./modifier/modifier-type";
 const overrides = {
   EGG_IMMEDIATE_HATCH_OVERRIDE: true,
   /*EGG_FREE_GACHA_PULLS_OVERRIDE: true*/
-  EGG_GACHA_PULL_COUNT_OVERRIDE: 2000
+  /*EGG_GACHA_PULL_COUNT_OVERRIDE: 2000*/
 
 } satisfies Partial<InstanceType<typeof DefaultOverrides>>;
 
