@@ -1,33 +1,44 @@
+import type { InputFieldConfig } from "./form-modal-ui-handler";
 import { FormModalUiHandler } from "./form-modal-ui-handler";
-import { ModalConfig } from "./modal-ui-handler";
-import * as Utils from "../utils";
+import type { ModalConfig } from "./modal-ui-handler";
 import { Mode } from "./ui";
 import { TextStyle, addTextObject } from "./text";
 import i18next from "i18next";
+import { pokerogueApi } from "#app/plugins/api/pokerogue-api";
+import { globalScene } from "#app/global-scene";
+
+interface LanguageSetting {
+  inputFieldFontSize?: string;
+  warningMessageFontSize?: string;
+  errorMessageFontSize?: string;
+}
+
+const languageSettings: { [key: string]: LanguageSetting } = {
+  "es-ES": {
+    inputFieldFontSize: "50px",
+    errorMessageFontSize: "40px",
+  },
+};
 
 export default class RegistrationFormUiHandler extends FormModalUiHandler {
-  getModalTitle(config?: ModalConfig): string {
+  getModalTitle(_config?: ModalConfig): string {
     return i18next.t("menu:register");
   }
 
-  getFields(config?: ModalConfig): string[] {
-    return [ i18next.t("menu:username"), i18next.t("menu:password"), i18next.t("menu:confirmPassword") ];
-  }
-
-  getWidth(config?: ModalConfig): number {
+  getWidth(_config?: ModalConfig): number {
     return 160;
   }
 
-  getMargin(config?: ModalConfig): [number, number, number, number] {
-    return [ 0, 0, 48, 0 ];
+  getMargin(_config?: ModalConfig): [number, number, number, number] {
+    return [0, 0, 48, 0];
   }
 
   getButtonTopMargin(): number {
     return 8;
   }
 
-  getButtonLabels(config?: ModalConfig): string[] {
-    return [ i18next.t("menu:register"), i18next.t("menu:backToLogin") ];
+  getButtonLabels(_config?: ModalConfig): string[] {
+    return [i18next.t("menu:register"), i18next.t("menu:backToLogin")];
   }
 
   getReadableErrorMessage(error: string): string {
@@ -36,21 +47,47 @@ export default class RegistrationFormUiHandler extends FormModalUiHandler {
       error = error.slice(0, colonIndex);
     }
     switch (error) {
-    case "invalid username":
-      return i18next.t("menu:invalidRegisterUsername");
-    case "invalid password":
-      return i18next.t("menu:invalidRegisterPassword");
-    case "failed to add account record":
-      return i18next.t("menu:usernameAlreadyUsed");
+      case "invalid username":
+        return i18next.t("menu:invalidRegisterUsername");
+      case "invalid password":
+        return i18next.t("menu:invalidRegisterPassword");
+      case "failed to add account record":
+        return i18next.t("menu:usernameAlreadyUsed");
     }
 
     return super.getReadableErrorMessage(error);
   }
 
+  override getInputFieldConfigs(): InputFieldConfig[] {
+    const inputFieldConfigs: InputFieldConfig[] = [];
+    inputFieldConfigs.push({ label: i18next.t("menu:username") });
+    inputFieldConfigs.push({
+      label: i18next.t("menu:password"),
+      isPassword: true,
+    });
+    inputFieldConfigs.push({
+      label: i18next.t("menu:confirmPassword"),
+      isPassword: true,
+    });
+    return inputFieldConfigs;
+  }
+
   setup(): void {
     super.setup();
 
-    const label = addTextObject(this.scene, 10, 87, i18next.t("menu:registrationAgeWarning"), TextStyle.TOOLTIP_CONTENT, { fontSize: "42px" });
+    this.modalContainer.list.forEach((child: Phaser.GameObjects.GameObject) => {
+      if (child instanceof Phaser.GameObjects.Text && child !== this.titleText) {
+        const inputFieldFontSize = languageSettings[i18next.resolvedLanguage!]?.inputFieldFontSize;
+        if (inputFieldFontSize) {
+          child.setFontSize(inputFieldFontSize);
+        }
+      }
+    });
+
+    const warningMessageFontSize = languageSettings[i18next.resolvedLanguage!]?.warningMessageFontSize ?? "42px";
+    const label = addTextObject(10, 87, i18next.t("menu:registrationAgeWarning"), TextStyle.TOOLTIP_CONTENT, {
+      fontSize: warningMessageFontSize,
+    });
 
     this.modalContainer.add(label);
   }
@@ -60,14 +97,18 @@ export default class RegistrationFormUiHandler extends FormModalUiHandler {
       const config = args[0] as ModalConfig;
 
       const originalRegistrationAction = this.submitAction;
-      this.submitAction = (_) => {
+      this.submitAction = _ => {
         // Prevent overlapping overrides on action modification
         this.submitAction = originalRegistrationAction;
         this.sanitizeInputs();
-        this.scene.ui.setMode(Mode.LOADING, { buttonActions: [] });
+        globalScene.ui.setMode(Mode.LOADING, { buttonActions: [] });
         const onFail = error => {
-          this.scene.ui.setMode(Mode.REGISTRATION_FORM, Object.assign(config, { errorMessage: error?.trim() }));
-          this.scene.ui.playError();
+          globalScene.ui.setMode(Mode.REGISTRATION_FORM, Object.assign(config, { errorMessage: error?.trim() }));
+          globalScene.ui.playError();
+          const errorMessageFontSize = languageSettings[i18next.resolvedLanguage!]?.errorMessageFontSize;
+          if (errorMessageFontSize) {
+            this.errorMessage.setFontSize(errorMessageFontSize);
+          }
         };
         if (!this.inputs[0].text) {
           return onFail(i18next.t("menu:emptyUsername"));
@@ -78,27 +119,28 @@ export default class RegistrationFormUiHandler extends FormModalUiHandler {
         if (this.inputs[1].text !== this.inputs[2].text) {
           return onFail(i18next.t("menu:passwordNotMatchingConfirmPassword"));
         }
-        Utils.apiPost("account/register", `username=${encodeURIComponent(this.inputs[0].text)}&password=${encodeURIComponent(this.inputs[1].text)}`, "application/x-www-form-urlencoded")
-          .then(response => response.text())
-          .then(response => {
-            if (!response) {
-              Utils.apiPost("account/login", `username=${encodeURIComponent(this.inputs[0].text)}&password=${encodeURIComponent(this.inputs[1].text)}`, "application/x-www-form-urlencoded")
-                .then(response => {
-                  if (!response.ok) {
-                    return response.text();
-                  }
-                  return response.json();
+        const [usernameInput, passwordInput] = this.inputs;
+        pokerogueApi.account
+          .register({
+            username: usernameInput.text,
+            password: passwordInput.text,
+          })
+          .then(registerError => {
+            if (!registerError) {
+              pokerogueApi.account
+                .login({
+                  username: usernameInput.text,
+                  password: passwordInput.text,
                 })
-                .then(response => {
-                  if (response.hasOwnProperty("token")) {
-                    Utils.setCookie(Utils.sessionIdKey, response.token);
-                    originalRegistrationAction && originalRegistrationAction();
+                .then(loginError => {
+                  if (!loginError) {
+                    originalRegistrationAction?.();
                   } else {
-                    onFail(response);
+                    onFail(loginError);
                   }
                 });
             } else {
-              onFail(response);
+              onFail(registerError);
             }
           });
       };

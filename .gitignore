@@ -42,5 +42,8 @@ coverage
 /dependency-graph.svg
 /.vs
 
+# Script outputs
+./*.csv
+
 #AJ ignore
 nohup.out
