@@ -1,10 +1,9 @@
-import BattleScene from "../battle-scene";
-import { EggHatchPhase } from "../egg-hatch-phase";
-import { Mode } from "./ui";
-import UiHandler from "./ui-handler";
-import {Button} from "#enums/buttons";
+import { globalScene } from "#app/global-scene";
+import { Button } from "#enums/buttons";
+import { UiMode } from "#enums/ui-mode";
+import { UiHandler } from "#ui/ui-handler";
 
-export default class EggHatchSceneHandler extends UiHandler {
+export class EggHatchSceneHandler extends UiHandler {
   public eggHatchContainer: Phaser.GameObjects.Container;
 
   /**
@@ -15,20 +14,20 @@ export default class EggHatchSceneHandler extends UiHandler {
    */
   public readonly eventTarget: EventTarget = new EventTarget();
 
-  constructor(scene: BattleScene) {
-    super(scene, Mode.EGG_HATCH_SCENE);
+  constructor() {
+    super(UiMode.EGG_HATCH_SCENE);
   }
 
   setup() {
-    this.eggHatchContainer = this.scene.add.container(0, -this.scene.game.canvas.height / 6);
-    this.scene.fieldUI.add(this.eggHatchContainer);
+    this.eggHatchContainer = globalScene.add.container(0, -globalScene.scaledCanvas.height);
+    globalScene.fieldUI.add(this.eggHatchContainer);
 
-    const eggLightraysAnimFrames = this.scene.anims.generateFrameNames("egg_lightrays", { start: 0, end: 3 });
-    if (!(this.scene.anims.exists("egg_lightrays"))) {
-      this.scene.anims.create({
+    const eggLightraysAnimFrames = globalScene.anims.generateFrameNames("egg_lightrays", { start: 0, end: 3 });
+    if (!globalScene.anims.exists("egg_lightrays")) {
+      globalScene.anims.create({
         key: "egg_lightrays",
         frames: eggLightraysAnimFrames,
-        frameRate: 32
+        frameRate: 32,
       });
     }
   }
@@ -38,23 +37,23 @@ export default class EggHatchSceneHandler extends UiHandler {
 
     this.getUi().showText("", 0);
 
-    this.scene.setModifiersVisible(false);
+    globalScene.setModifiersVisible(false);
 
     return true;
   }
 
   processInput(button: Button): boolean {
     if (button === Button.ACTION || button === Button.CANCEL) {
-      const phase = this.scene.getCurrentPhase();
-      if (phase instanceof EggHatchPhase && phase.trySkip()) {
+      const phase = globalScene.phaseManager.getCurrentPhase();
+      if (phase?.is("EggHatchPhase") && phase.trySkip()) {
         return true;
       }
     }
 
-    return this.scene.ui.getMessageHandler().processInput(button);
+    return globalScene.ui.getMessageHandler().processInput(button);
   }
 
-  setCursor(_cursor: integer): boolean {
+  setCursor(_cursor: number): boolean {
     return false;
   }
 

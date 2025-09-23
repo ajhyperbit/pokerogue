@@ -1,9 +1,10 @@
-import { Challenge, copyChallenge } from "#app/data/challenge.js";
+import type { Challenge } from "#data/challenge";
+import { copyChallenge } from "#data/challenge";
 
-export default class ChallengeData {
-  public id: integer;
-  public value: integer;
-  public severity: integer;
+export class ChallengeData {
+  public id: number;
+  public value: number;
+  public severity: number;
 
   constructor(source: Challenge | any) {
     this.id = source.id;

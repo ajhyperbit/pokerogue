@@ -4,10 +4,17 @@ on:
   push:
     branches:
       - main
+      - beta
+      - release
+      - 'hotfix*'
   pull_request:
     branches:
       - main
       - beta
+      - release
+      - 'hotfix*'
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   pages:
@@ -22,8 +29,9 @@ jobs:
 
     steps:
       - name: Checkout repository for Typedoc
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          submodules: 'recursive'
           path: pokerogue_docs
 
       - name: Install OS package
@@ -31,14 +39,19 @@ jobs:
           sudo apt update
           sudo apt install -y git openssh-client
 
-      - name: Setup Node 20.13.1
-        uses: actions/setup-node@v1
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
+          version: 10
+
+      - name: Setup Node 22.14.1
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "pokerogue_docs/.nvmrc"
 
       - name: Checkout repository for Github Pages
         if: github.event_name == 'push'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: pokerogue_gh
           ref: gh-pages
@@ -47,16 +60,16 @@ jobs:
         working-directory: ${{env.api-dir}}
         run: |
           cd pokerogue_docs
-          npm ci
+          pnpm i
 
       - name: Generate Typedoc docs
         working-directory: ${{env.api-dir}}
         run: |
           cd pokerogue_docs
-          npm run docs -- --out /tmp/docs --githubPages false --entryPoints ./src/
+          pnpm exec typedoc --out /tmp/docs --githubPages false --entryPoints ./src/
 
       - name: Commit & Push docs
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && (github.ref_name == 'beta' || github.ref_name == 'main')
         run: |
           cd pokerogue_gh
           git config user.email "github-actions[bot]@users.noreply.github.com"

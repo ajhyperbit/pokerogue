@@ -1,11 +1,12 @@
-import BattleScene from "../battle-scene";
-import { ModalConfig, ModalUiHandler } from "./modal-ui-handler";
-import { addTextObject, TextStyle } from "./text";
-import { Mode } from "./ui";
+import { TextStyle } from "#enums/text-style";
+import type { UiMode } from "#enums/ui-mode";
+import type { ModalConfig } from "#ui/modal-ui-handler";
+import { ModalUiHandler } from "#ui/modal-ui-handler";
+import { addTextObject } from "#ui/text";
 
-export default class SessionReloadModalUiHandler extends ModalUiHandler {
-  constructor(scene: BattleScene, mode: Mode | null = null) {
-    super(scene, mode);
+export class SessionReloadModalUiHandler extends ModalUiHandler {
+  constructor(mode: UiMode | null = null) {
+    super(mode);
   }
 
   getModalTitle(): string {
@@ -21,27 +22,33 @@ export default class SessionReloadModalUiHandler extends ModalUiHandler {
   }
 
   getMargin(): [number, number, number, number] {
-    return [ 0, 0, 48, 0 ];
+    return [0, 0, 48, 0];
   }
 
   getButtonLabels(): string[] {
-    return [ ];
+    return [];
   }
 
   setup(): void {
     super.setup();
 
-    const label = addTextObject(this.scene, this.getWidth() / 2, this.getHeight() / 2, "Your session is out of date.\nYour data will be reloaded…", TextStyle.WINDOW, { fontSize: "48px", align: "center" });
+    const label = addTextObject(
+      this.getWidth() / 2,
+      this.getHeight() / 2,
+      "Your session is out of date.\nYour data will be reloaded…",
+      TextStyle.WINDOW,
+      { fontSize: "48px", align: "center" },
+    );
     label.setOrigin(0.5, 0.5);
 
     this.modalContainer.add(label);
   }
 
-  show(args: any[]): boolean {
+  show(_args: any[]): boolean {
     const config: ModalConfig = {
-      buttonActions: []
+      buttonActions: [],
     };
 
-    return super.show([ config ]);
+    return super.show([config]);
   }
 }
